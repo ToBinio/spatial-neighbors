@@ -39,7 +39,7 @@ impl<Data: Clone> SpatialHash<Data> {
 
 impl<Data: Clone> SpatialPartitioner<Data> for SpatialHash<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
-        if position.0 < self.x.0 || position.0 >= self.x.1 || position.1 < self.y.0 || position.1 >= self.y.1 {
+        if position.0 <= self.x.0 || position.0 >= self.x.1 || position.1 <= self.y.0 || position.1 >= self.y.1 {
             //todo better error message
             panic!("tried to insert position with was out of bounce")
         }
@@ -100,4 +100,34 @@ pub trait SpatialPartitioner<Data: Clone> {
     fn clear(&mut self);
     fn count(&self) -> usize;
     fn in_circle(&self, position: (f64, f64), radius: f64) -> Vec<Data>;
+}
+
+pub struct List<Data: Clone> {
+    pub data: Vec<((f64, f64), Data)>,
+}
+
+impl<Data: Clone> SpatialPartitioner<Data> for List<Data> {
+    fn insert(&mut self, position: (f64, f64), data: Data) {
+        self.data.push((position, data));
+    }
+
+    fn clear(&mut self) {
+        self.data.clear();
+    }
+
+    fn count(&self) -> usize {
+        self.data.len()
+    }
+
+    fn in_circle(&self, position: (f64, f64), radius: f64) -> Vec<Data> {
+        let mut data = Vec::new();
+
+        for element in &self.data {
+            if (element.0.0 - position.0).powi(2) + (element.0.1 - position.1).powi(2) <= radius.powi(2) {
+                data.push(element.1.clone());
+            }
+        };
+
+        data
+    }
 }

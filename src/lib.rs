@@ -1,6 +1,7 @@
 pub(crate) mod util;
 pub mod spatial_hash;
 pub mod list;
+pub mod quad_tree;
 
 extern crate core;
 

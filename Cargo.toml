@@ -9,9 +9,16 @@ edition = "2021"
 criterion = {version = "0.4.0" , features = ["html_reports"]}
 
 [[bench]]
-name = "insert_benchmark"
+name = "insert_spatial_hash_benchmark"
+harness = false
+
+[[bench]]
+name = "insert_quad_tree_benchmark"
 harness = false
 
 [[bench]]
 name = "in_circle_benchmark"
 harness = false
+
+[dependencies]
+array-init = "2.0.1"

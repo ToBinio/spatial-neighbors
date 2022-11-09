@@ -1,5 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId, black_box};
-use spatial_partition::{List, SpatialHash, SpatialPartitioner};
+use spatial_partition::{SpatialPartitioner};
+use spatial_partition::list::List;
+use spatial_partition::spatial_hash::SpatialHash;
 
 pub fn insert_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("Insert");

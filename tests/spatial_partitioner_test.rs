@@ -1,4 +1,6 @@
-use spatial_partition::{List, SpatialHash, SpatialPartitioner};
+use spatial_partition::{SpatialPartitioner};
+use spatial_partition::list::List;
+use spatial_partition::spatial_hash::SpatialHash;
 
 fn fill_spatial_partitioner(list: &mut List<i32>, spatial_hash: &mut SpatialHash<i32>) {
     for x in -49..50 {

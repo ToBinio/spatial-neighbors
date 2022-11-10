@@ -34,15 +34,14 @@ impl<Data: Clone> SpatialHash<Data> {
         let x = (((position.0 - self.x.0) as f32 / (self.x.1 - self.x.0) as f32) * self.x_count as f32).floor() as u32;
         let y = (((position.1 - self.y.0) as f32 / (self.y.1 - self.y.0) as f32) * self.y_count as f32).floor() as u32;
 
-        return (x, y);
+        (x, y)
     }
 }
 
 impl<Data: Clone> SpatialPartitioner<Data> for SpatialHash<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
         if position.0 <= self.x.0 || position.0 >= self.x.1 || position.1 <= self.y.0 || position.1 >= self.y.1 {
-            //todo better error message
-            panic!("tried to insert position with was out of bounce")
+            panic!("tried to insert position into SpatialHash which was out of bounce")
         }
 
         self.insert_unchecked(position, data);
@@ -56,7 +55,7 @@ impl<Data: Clone> SpatialPartitioner<Data> for SpatialHash<Data> {
     }
 
     fn count(&self) -> usize {
-        return self.count;
+        self.count
     }
 
     fn clear(&mut self) {

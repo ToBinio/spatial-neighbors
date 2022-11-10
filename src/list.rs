@@ -2,8 +2,23 @@ use crate::SpatialPartitioner;
 use crate::util::in_range;
 
 pub struct List<Data: Clone> {
-    pub data: Vec<((f64, f64), Data)>,
+    data: Vec<((f64, f64), Data)>,
 }
+
+impl<Data: Clone> List<Data> {
+    pub fn new() -> List<Data> {
+        List {
+            data: Vec::new()
+        }
+    }
+}
+
+impl<Data: Clone> Default for List<Data> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 
 impl<Data: Clone> SpatialPartitioner<Data> for List<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {

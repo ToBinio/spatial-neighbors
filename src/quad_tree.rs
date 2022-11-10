@@ -23,6 +23,10 @@ impl<Data: Copy> QuadTree<Data> {
 
 impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
+        if position.0 <= self.x.0 || position.0 >= self.x.1 || position.1 <= self.y.0 || position.1 >= self.y.1 {
+            panic!("tried to insert position into QuadTree which was out of bounce")
+        }
+
         self.insert_unchecked(position, data);
     }
 
@@ -110,8 +114,8 @@ impl<Data: Copy> QuadTreeNode<Data> {
         indexes[self.get_index((position.0 + radius, position.1 - radius))] = true;
         indexes[self.get_index((position.0 + radius, position.1 + radius))] = true;
 
-        for i in 0..4 {
-            if indexes[i] {
+        for (i, index) in indexes.iter().enumerate() {
+            if *index {
                 self.nodes.as_ref().unwrap()[i].in_circle(position, radius, data_vec);
             }
         }
@@ -124,12 +128,10 @@ impl<Data: Copy> QuadTreeNode<Data> {
             } else {
                 1
             }
+        } else if self.center.1 > location.1 {
+            2
         } else {
-            if self.center.1 > location.1 {
-                2
-            } else {
-                3
-            }
+            3
         }
     }
 }

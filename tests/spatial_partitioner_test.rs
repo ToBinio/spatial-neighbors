@@ -24,9 +24,7 @@ fn in_circle_different_cell_counts() {
     for cell_count in cell_count {
         let mut spatial_hash = SpatialHash::new((-50.0, 50.0), (-50.0, 50.0), cell_count, cell_count);
         let mut quad_tree = QuadTree::new((-50.0, 50.0), (-50.0, 50.0), cell_count as u16);
-        let mut list = List {
-            data: Vec::new()
-        };
+        let mut list = List::new();
 
         fill_spatial_partitioner(&mut list, &mut spatial_hash, &mut quad_tree);
 
@@ -41,9 +39,7 @@ fn in_circle_different_location() {
 
     let mut spatial_hash = SpatialHash::new((-50.0, 50.0), (-50.0, 50.0), 50, 50);
     let mut quad_tree = QuadTree::new((-50.0, 50.0), (-50.0, 50.0), 4);
-    let mut list = List {
-        data: Vec::new()
-    };
+    let mut list = List::new();
 
     fill_spatial_partitioner(&mut list, &mut spatial_hash, &mut quad_tree);
 
@@ -59,9 +55,7 @@ fn in_circle_different_sizes() {
 
     let mut spatial_hash = SpatialHash::new((-50.0, 50.0), (-50.0, 50.0), 50, 50);
     let mut quad_tree = QuadTree::new((-50.0, 50.0), (-50.0, 50.0), 4);
-    let mut list = List {
-        data: Vec::new()
-    };
+    let mut list = List::new();
 
     fill_spatial_partitioner(&mut list, &mut spatial_hash, &mut quad_tree);
 
@@ -77,9 +71,7 @@ fn in_circle_on_borders() {
 
     let mut spatial_hash = SpatialHash::new((-50.0, 50.0), (-50.0, 50.0), 50, 50);
     let mut quad_tree = QuadTree::new((-50.0, 50.0), (-50.0, 50.0), 4);
-    let mut list = List {
-        data: Vec::new()
-    };
+    let mut list = List::new();
 
     fill_spatial_partitioner(&mut list, &mut spatial_hash, &mut quad_tree);
 
@@ -90,31 +82,10 @@ fn in_circle_on_borders() {
 }
 
 #[test]
-#[should_panic]
-fn insert_out_of_bounce() {
-    let mut spatial_hash = SpatialHash::new((-10.0, 10.0), (-10.0, 10.0), 5, 5);
-    let mut quad_tree = QuadTree::new((-50.0, 50.0), (-50.0, 50.0), 4);
-
-    //todo
-
-    spatial_hash.insert((-10.0, 0.0), 1);
-    spatial_hash.insert((10.0, 0.0), 1);
-    spatial_hash.insert((0.0, -10.0), 1);
-    spatial_hash.insert((0.0, 10.0), 1);
-
-    quad_tree.insert((-10.0, 0.0), 1);
-    quad_tree.insert((10.0, 0.0), 1);
-    quad_tree.insert((0.0, -10.0), 1);
-    quad_tree.insert((0.0, 10.0), 1);
-}
-
-#[test]
 fn count_and_clear() {
     let mut spatial_hash = SpatialHash::new((-50.0, 50.0), (-50.0, 50.0), 50, 50);
     let mut quad_tree = QuadTree::new((-50.0, 50.0), (-50.0, 50.0), 4);
-    let mut list = List {
-        data: Vec::new()
-    };
+    let mut list = List::new();
 
     fill_spatial_partitioner(&mut list, &mut spatial_hash, &mut quad_tree);
 

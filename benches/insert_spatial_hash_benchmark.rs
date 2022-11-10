@@ -49,9 +49,10 @@ pub fn insert_benchmark(c: &mut Criterion) {
                 }
             })
         });
-
-        group.finish();
     }
 
-    criterion_group!(benches, insert_benchmark);
-    criterion_main!(benches);
+    group.finish();
+}
+
+criterion_group!(benches, insert_benchmark);
+criterion_main!(benches);

@@ -21,4 +21,3 @@ name = "in_circle_benchmark"
 harness = false
 
 [dependencies]
-array-init = "2.0.1"

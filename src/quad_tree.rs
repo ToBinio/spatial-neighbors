@@ -87,19 +87,8 @@ impl<Data: Copy> QuadTreeNode<Data> {
                 ]))
             }
         } else {
-            if self.center.0 > location.0 {
-                if self.center.1 > location.1 {
-                    self.nodes.as_mut().unwrap()[0].insert(location, data);
-                } else {
-                    self.nodes.as_mut().unwrap()[1].insert(location, data);
-                }
-            } else {
-                if self.center.1 > location.1 {
-                    self.nodes.as_mut().unwrap()[2].insert(location, data);
-                } else {
-                    self.nodes.as_mut().unwrap()[3].insert(location, data);
-                }
-            }
+            let i = self.get_index(location);
+            self.nodes.as_mut().unwrap()[i].insert(location, data);
         }
     }
 
@@ -114,19 +103,32 @@ impl<Data: Copy> QuadTreeNode<Data> {
             return;
         }
 
-        //todo fix
+        let mut indexes = [false; 4];
 
-        if self.center.0 > position.0 {
-            if self.center.1 > position.1 {
-                self.nodes.as_ref().unwrap()[0].in_circle(position, radius, data_vec);
+        indexes[self.get_index((position.0 - radius, position.1 - radius))] = true;
+        indexes[self.get_index((position.0 - radius, position.1 + radius))] = true;
+        indexes[self.get_index((position.0 + radius, position.1 - radius))] = true;
+        indexes[self.get_index((position.0 + radius, position.1 + radius))] = true;
+
+        for i in 0..4 {
+            if indexes[i] {
+                self.nodes.as_ref().unwrap()[i].in_circle(position, radius, data_vec);
+            }
+        }
+    }
+
+    fn get_index(&self, location: (f64, f64)) -> usize {
+        if self.center.0 > location.0 {
+            if self.center.1 > location.1 {
+                0
             } else {
-                self.nodes.as_ref().unwrap()[1].in_circle(position, radius, data_vec);
+                1
             }
         } else {
-            if self.center.1 > position.1 {
-                self.nodes.as_ref().unwrap()[2].in_circle(position, radius, data_vec);
+            if self.center.1 > location.1 {
+                2
             } else {
-                self.nodes.as_ref().unwrap()[3].in_circle(position, radius, data_vec);
+                3
             }
         }
     }

@@ -1,8 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId, black_box};
 use spatial_partition::{SpatialPartitioner};
-use spatial_partition::list::List;
-use spatial_partition::quad_tree::QuadTree;
-use spatial_partition::spatial_hash::SpatialHash;
+use spatial_partition::grid::Grid;
 
 pub fn insert_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("Insert");
@@ -12,7 +10,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut spatial_hash = SpatialHash::new((-size as f64, size as f64), (-size as f64, size as f64), 10, 10);
+                let mut spatial_hash = Grid::new((-size as f64, size as f64), (-size as f64, size as f64), 10, 10);
 
                 for x in (-size + 1)..size {
                     for y in (-size + 1)..size {
@@ -26,7 +24,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut spatial_hash = SpatialHash::new((-size as f64, size as f64), (-size as f64, size as f64), 100, 100);
+                let mut spatial_hash = Grid::new((-size as f64, size as f64), (-size as f64, size as f64), 100, 100);
 
                 for x in (-size + 1)..size {
                     for y in (-size + 1)..size {
@@ -40,7 +38,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut spatial_hash = SpatialHash::new((-size as f64, size as f64), (-size as f64, size as f64), 1000, 1000);
+                let mut spatial_hash = Grid::new((-size as f64, size as f64), (-size as f64, size as f64), 1000, 1000);
 
                 for x in (-size + 1)..size {
                     for y in (-size + 1)..size {

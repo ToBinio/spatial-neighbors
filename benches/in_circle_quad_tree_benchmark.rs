@@ -1,8 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId, black_box};
 use spatial_partition::{SpatialPartitioner};
-use spatial_partition::list::List;
 use spatial_partition::quad_tree::QuadTree;
-use spatial_partition::spatial_hash::SpatialHash;
 
 pub fn in_circle_radius_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("InCircleRadiusQuadTree");

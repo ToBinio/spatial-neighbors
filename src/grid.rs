@@ -1,7 +1,7 @@
 use crate::SpatialPartitioner;
 use crate::util::in_range;
 
-pub struct SpatialHash<Data: Clone> {
+pub struct Grid<Data: Clone> {
     cells: Vec<Vec<((f64, f64), Data)>>,
 
     x_count: u32,
@@ -12,15 +12,15 @@ pub struct SpatialHash<Data: Clone> {
     count: usize,
 }
 
-impl<Data: Clone> SpatialHash<Data> {
-    pub fn new(x: (f64, f64), y: (f64, f64), x_count: u32, y_count: u32) -> SpatialHash<Data> {
+impl<Data: Clone> Grid<Data> {
+    pub fn new(x: (f64, f64), y: (f64, f64), x_count: u32, y_count: u32) -> Grid<Data> {
         let mut cells = Vec::new();
 
         for i in 0..(x_count * y_count) {
             cells.insert(i as usize, Vec::new());
         };
 
-        SpatialHash {
+        Grid {
             cells,
             x_count,
             y_count,
@@ -38,7 +38,7 @@ impl<Data: Clone> SpatialHash<Data> {
     }
 }
 
-impl<Data: Clone> SpatialPartitioner<Data> for SpatialHash<Data> {
+impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
         if position.0 <= self.x.0 || position.0 >= self.x.1 || position.1 <= self.y.0 || position.1 >= self.y.1 {
             panic!("tried to insert position into SpatialHash which was out of bounce")

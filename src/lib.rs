@@ -9,7 +9,7 @@
 //! [QuadTree]: https://en.wikipedia.org/wiki/Quadtree
 
 pub(crate) mod util;
-pub mod spatial_hash;
+pub mod grid;
 pub mod quad_tree;
 
 extern crate core;

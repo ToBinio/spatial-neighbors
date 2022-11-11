@@ -4,8 +4,7 @@ use crate::util::in_range;
 pub struct Grid<Data: Clone> {
     cells: Vec<Vec<((f64, f64), Data)>>,
 
-    x_count: u32,
-    y_count: u32,
+    size: (u32, u32),
     x: (f64, f64),
     y: (f64, f64),
 
@@ -13,17 +12,23 @@ pub struct Grid<Data: Clone> {
 }
 
 impl<Data: Clone> Grid<Data> {
-    pub fn new(x: (f64, f64), y: (f64, f64), x_count: u32, y_count: u32) -> Grid<Data> {
+    ///
+    /// # Arguments
+    ///
+    /// * `x`: (min_x, max_x) defines the area in wich points can be inserted
+    /// * `y`: (min_y, max_y) defines the area in wich points can be inserted
+    /// * `size`: (count_x, count_y) defines how many cell should be present
+    ///
+    pub fn new(x: (f64, f64), y: (f64, f64), size: (u32, u32)) -> Grid<Data> {
         let mut cells = Vec::new();
 
-        for i in 0..(x_count * y_count) {
+        for i in 0..(size.0 * size.1) {
             cells.insert(i as usize, Vec::new());
         };
 
         Grid {
             cells,
-            x_count,
-            y_count,
+            size,
             x,
             y,
             count: 0,
@@ -31,8 +36,8 @@ impl<Data: Clone> Grid<Data> {
     }
 
     fn pos_to_index(&self, position: (f64, f64)) -> (u32, u32) {
-        let x = (((position.0 - self.x.0) as f32 / (self.x.1 - self.x.0) as f32) * self.x_count as f32).floor() as u32;
-        let y = (((position.1 - self.y.0) as f32 / (self.y.1 - self.y.0) as f32) * self.y_count as f32).floor() as u32;
+        let x = (((position.0 - self.x.0) as f32 / (self.x.1 - self.x.0) as f32) * self.size.0 as f32).floor() as u32;
+        let y = (((position.1 - self.y.0) as f32 / (self.y.1 - self.y.0) as f32) * self.size.1 as f32).floor() as u32;
 
         (x, y)
     }
@@ -40,7 +45,7 @@ impl<Data: Clone> Grid<Data> {
 
 impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
-        if position.0 <= self.x.0 || position.0 >= self.x.1 || position.1 <= self.y.0 || position.1 >= self.y.1 {
+        if position.0 < self.x.0 || position.0 >= self.x.1 || position.1 < self.y.0 || position.1 >= self.y.1 {
             panic!("tried to insert position into SpatialHash which was out of bounce")
         }
 
@@ -50,7 +55,7 @@ impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
     fn insert_unchecked(&mut self, position: (f64, f64), data: Data) {
         let index_position = self.pos_to_index(position);
 
-        self.cells.get_mut((index_position.0 + (index_position.1 * self.x_count)) as usize).unwrap().push((position, data));
+        self.cells.get_mut((index_position.0 + (index_position.1 * self.size.0)) as usize).unwrap().push((position, data));
         self.count += 1;
     }
 
@@ -64,8 +69,8 @@ impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
     }
 
     fn in_circle(&self, position: (f64, f64), radius: f64) -> Vec<Data> {
-        let radius_x = (radius / ((self.x.1 - self.x.0) as f64 / self.x_count as f64)).ceil().min(self.x_count as f64) as i32;
-        let radius_y = (radius / ((self.y.1 - self.y.0) as f64 / self.y_count as f64)).ceil().min(self.y_count as f64) as i32;
+        let radius_x = (radius / ((self.x.1 - self.x.0) as f64 / self.size.0 as f64)).ceil().min(self.size.0 as f64) as i32;
+        let radius_y = (radius / ((self.y.1 - self.y.0) as f64 / self.size.1 as f64)).ceil().min(self.size.1 as f64) as i32;
 
         let index_position = self.pos_to_index(position);
 
@@ -76,11 +81,11 @@ impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
                 let x = index_position.0 as i32 + x;
                 let y = index_position.1 as i32 + y;
 
-                if x < 0 || x >= self.x_count as i32 || y < 0 || y >= self.y_count as i32 {
+                if x < 0 || x >= self.size.0 as i32 || y < 0 || y >= self.size.1 as i32 {
                     continue;
                 }
 
-                let index = x + (y * self.x_count as i32);
+                let index = x + (y * self.size.0 as i32);
 
                 match self.cells.get(index as usize) {
                     None => {}

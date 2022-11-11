@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId, black_box};
-use spatial_partition::{SpatialPartitioner};
-use spatial_partition::quad_tree::QuadTree;
+use spatial_neighbors::{SpatialPartitioner};
+use spatial_neighbors::quad_tree::QuadTree;
 
 pub fn in_circle_radius_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("InCircleRadiusQuadTree");
@@ -9,8 +9,8 @@ pub fn in_circle_radius_benchmark(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("QuadTree10", radius), radius, |b, radius| {
             let mut quad_tree = black_box(QuadTree::new((-500 as f64, 500 as f64), (-500 as f64, 500 as f64), 10));
 
-            for x in (-499 + 1)..500 {
-                for y in (-499 + 1)..500 {
+            for x in -500..500 {
+                for y in -500..500 {
                     quad_tree.insert((x as f64, y as f64), 1);
                 }
             }
@@ -23,8 +23,8 @@ pub fn in_circle_radius_benchmark(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("QuadTree25", radius), radius, |b, radius| {
             let mut quad_tree = black_box(QuadTree::new((-500 as f64, 500 as f64), (-500 as f64, 500 as f64), 25));
 
-            for x in (-499 + 1)..500 {
-                for y in (-499 + 1)..500 {
+            for x in -500..500 {
+                for y in -500..500 {
                     quad_tree.insert((x as f64, y as f64), 1);
                 }
             }
@@ -37,8 +37,8 @@ pub fn in_circle_radius_benchmark(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("QuadTree50", radius), radius, |b, radius| {
             let mut quad_tree = black_box(QuadTree::new((-500 as f64, 500 as f64), (-500 as f64, 500 as f64), 50));
 
-            for x in (-499 + 1)..500 {
-                for y in (-499 + 1)..500 {
+            for x in -500..500 {
+                for y in -500..500 {
                     quad_tree.insert((x as f64, y as f64), 1);
                 }
             }

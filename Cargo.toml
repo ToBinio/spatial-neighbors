@@ -1,5 +1,5 @@
 [package]
-name = "spatial-partition"
+name = "spatial-neighbors"
 version = "0.1.0"
 edition = "2021"
 
@@ -23,5 +23,3 @@ harness = false
 [[bench]]
 name = "in_circle_quad_tree_benchmark"
 harness = false
-
-[dependencies]

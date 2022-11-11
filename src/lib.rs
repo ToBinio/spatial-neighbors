@@ -1,10 +1,12 @@
+//! # Spatial Neighbors
+//!
 //! Simple to use implementation of some Spatial-Partitioning Algorithms | DataStructures
 //!
 //! useful for finding all objs in a given area
 //!
 //! DataStructures
 //! - [QuadTree]
-//! - SpatialHash
+//! - Grid | SpatialHash
 //!
 //! [QuadTree]: https://en.wikipedia.org/wiki/Quadtree
 
@@ -29,7 +31,7 @@ pub trait SpatialPartitioner<Data: Clone> {
     /// # Arguments
     ///
     /// * `position`: position of the obj (x,y)
-    /// * `data`: the DataValue which will be return when queued
+    /// * `data`: the DataValue which will be return when queued.
     /// e.g index of an other list which stores the "real" data
     ///
     fn insert_unchecked(&mut self, position: (f64, f64), data: Data);

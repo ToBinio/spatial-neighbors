@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId, black_box};
-use spatial_partition::{SpatialPartitioner};
-use spatial_partition::quad_tree::QuadTree;
+use spatial_neighbors::{SpatialPartitioner};
+use spatial_neighbors::quad_tree::QuadTree;
 
 pub fn insert_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("InsertQuadTree");
@@ -12,8 +12,8 @@ pub fn insert_benchmark(c: &mut Criterion) {
             b.iter(|| {
                 let mut quad_tree = QuadTree::new((-size as f64, size as f64), (-size as f64, size as f64), 10);
 
-                for x in (-size + 1)..size {
-                    for y in (-size + 1)..size {
+                for x in -size..size {
+                    for y in -size..size {
                         quad_tree.insert((x as f64, y as f64), 1);
                     }
                 }
@@ -26,8 +26,8 @@ pub fn insert_benchmark(c: &mut Criterion) {
             b.iter(|| {
                 let mut quad_tree = QuadTree::new((-size as f64, size as f64), (-size as f64, size as f64), 25);
 
-                for x in (-size + 1)..size {
-                    for y in (-size + 1)..size {
+                for x in -size..size {
+                    for y in -size..size {
                         quad_tree.insert((x as f64, y as f64), 1);
                     }
                 }
@@ -40,8 +40,8 @@ pub fn insert_benchmark(c: &mut Criterion) {
             b.iter(|| {
                 let mut quad_tree = QuadTree::new((-size as f64, size as f64), (-size as f64, size as f64), 50);
 
-                for x in (-size + 1)..size {
-                    for y in (-size + 1)..size {
+                for x in -size..size {
+                    for y in -size..size {
                         quad_tree.insert((x as f64, y as f64), 1);
                     }
                 }

@@ -1,6 +1,6 @@
 //! # Spatial Neighbors
 //!
-//! Simple to use implementation of some Spatial-Partitioning Algorithms | DataStructures
+//! Simple to use implementation of certain Spatial-Partitioning Algorithms | DataStructures
 //!
 //! useful for finding all objs in a given area
 //!

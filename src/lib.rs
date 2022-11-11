@@ -1,17 +1,52 @@
+//! Simple to use implementation of some Spatial-Partitioning Algorithms | DataStructures
+//!
+//! useful for finding all objs in a given area
+//!
+//! DataStructures
+//! - [QuadTree]
+//! - SpatialHash
+//!
+//! [QuadTree]: https://en.wikipedia.org/wiki/Quadtree
+
 pub(crate) mod util;
 pub mod spatial_hash;
-pub mod list;
 pub mod quad_tree;
 
 extern crate core;
 
 pub trait SpatialPartitioner<Data: Clone> {
+    /// inserts an obj and checks if position is out of bounce
+    ///
+    /// # Arguments
+    ///
+    /// * `position`: position of the obj (x,y)
+    /// * `data`: the DataValue which will be return when queued
+    /// e.g index of an other list which stores the "real" data
+    ///
     fn insert(&mut self, position: (f64, f64), data: Data);
+    /// inserts an obj and DOES NOT check if position is out of bounce
+    ///
+    /// # Arguments
+    ///
+    /// * `position`: position of the obj (x,y)
+    /// * `data`: the DataValue which will be return when queued
+    /// e.g index of an other list which stores the "real" data
+    ///
     fn insert_unchecked(&mut self, position: (f64, f64), data: Data);
 
+    /// returns the count of points which are currently stored
     fn count(&self) -> usize;
 
     fn clear(&mut self);
 
+    /// gets all DataValues in the given search circle
+    ///
+    /// # Arguments
+    ///
+    /// * `position`: center of the search circle
+    /// * `radius`: radius of the search circle
+    ///
+    /// returns: Vec<Data>
+    ///
     fn in_circle(&self, position: (f64, f64), radius: f64) -> Vec<Data>;
 }

@@ -2,7 +2,7 @@
 //!
 //! Simple to use implementation of certain Spatial-Partitioning Algorithms | DataStructures
 //!
-//! useful for finding all objs in a given area
+//! Useful for finding all objects  in a given area
 //!
 //! DataStructures
 //! - [QuadTree]

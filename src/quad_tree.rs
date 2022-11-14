@@ -4,12 +4,14 @@ use crate::util::in_range;
 
 pub struct QuadTree<Data: Copy> {
     node: QuadTreeNode<Data>,
+    min_size: Option<f64>,
     capacity: u16,
 
     x: Range<f64>,
     y: Range<f64>,
 
     count: usize,
+
 }
 
 impl<Data: Copy> QuadTree<Data> {
@@ -22,12 +24,28 @@ impl<Data: Copy> QuadTree<Data> {
     ///
     pub fn new(x: Range<f64>, y: Range<f64>, capacity: u16) -> QuadTree<Data> {
         QuadTree {
-            node: QuadTreeNode::new(((x.end - x.start) / 2.0, (y.end - y.start) / 2.0), ((x.end - x.start), (y.end - y.start)), capacity),
+            node: QuadTreeNode::new(((x.end - x.start) / 2.0, (y.end - y.start) / 2.0), ((x.end - x.start), (y.end - y.start)), capacity, None),
+            min_size: None,
+            capacity,
             x,
             y,
             count: 0,
-            capacity,
         }
+    }
+
+    ///
+    /// # Arguments
+    ///
+    /// * `x`: min_x..max_x defines the area in wich points can be inserted
+    /// * `y`: min_y..max_y defines the area in wich points can be inserted
+    /// * `capacity`: capacity of each TreeNode
+    /// * `min_size`: defines a size which a node_size can not fall below. Useful to optimize a QuadTree if you know the you will always hava a search radius of at leased min_size.
+    ///
+    pub fn new_min_size(x: Range<f64>, y: Range<f64>, capacity: u16, min_size: f64) -> QuadTree<Data> {
+        let mut tree = Self::new(x, y, capacity);
+        tree.min_size = Some(min_size);
+
+        tree
     }
 }
 
@@ -42,7 +60,7 @@ impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
 
     fn insert_unchecked(&mut self, position: (f64, f64), data: Data) {
         self.count += 1;
-        self.node.insert(position, data);
+        self.node.insert(position, data, self.min_size);
     }
 
     fn count(&self) -> usize {
@@ -50,7 +68,7 @@ impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
     }
 
     fn clear(&mut self) {
-        self.node = QuadTreeNode::new(((self.x.start - self.x.end) / 2.0, (self.y.start - self.y.end) / 2.0), ((self.x.start - self.x.end), (self.y.start - self.y.end)), self.capacity);
+        self.node = QuadTreeNode::new(((self.x.start - self.x.end) / 2.0, (self.y.start - self.y.end) / 2.0), ((self.x.start - self.x.end), (self.y.start - self.y.end)), self.capacity, self.min_size);
         self.count = 0;
     }
 
@@ -66,7 +84,9 @@ impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
 struct QuadTreeNode<Data: Copy> {
     data: Vec<((f64, f64), Data)>,
     capacity: u16,
+
     is_full: bool,
+    is_min_size: bool,
 
     nodes: Option<Box<[QuadTreeNode<Data>; 4]>>,
 
@@ -75,34 +95,47 @@ struct QuadTreeNode<Data: Copy> {
 }
 
 impl<Data: Copy> QuadTreeNode<Data> {
-    fn new(center: (f64, f64), size: (f64, f64), capacity: u16) -> QuadTreeNode<Data> {
+    fn new(center: (f64, f64), size: (f64, f64), capacity: u16, min_size: Option<f64>) -> QuadTreeNode<Data> {
+        let mut is_min_size = false;
+
+        match min_size {
+            None => {}
+            Some(min_size) => {
+                if size.0 <= min_size || size.1 <= min_size {
+                    is_min_size = true;
+                }
+            }
+        }
+
         QuadTreeNode {
             data: Vec::new(),
             nodes: None,
             center,
             size,
             capacity,
+
             is_full: false,
+            is_min_size,
         }
     }
 
-    fn insert(&mut self, location: (f64, f64), data: Data) {
+    fn insert(&mut self, location: (f64, f64), data: Data, min_size: Option<f64>) {
         if !self.is_full {
             self.data.push((location, data));
 
-            if self.data.len() >= self.capacity as usize {
+            if !self.is_min_size && self.data.len() >= self.capacity as usize {
                 self.is_full = true;
 
                 self.nodes = Some(Box::new([
-                    QuadTreeNode::new((self.center.0 - self.size.0 / 2.0, self.center.1 - self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity),
-                    QuadTreeNode::new((self.center.0 - self.size.0 / 2.0, self.center.1 + self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity),
-                    QuadTreeNode::new((self.center.0 + self.size.0 / 2.0, self.center.1 - self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity),
-                    QuadTreeNode::new((self.center.0 + self.size.0 / 2.0, self.center.1 + self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity),
+                    QuadTreeNode::new((self.center.0 - self.size.0 / 2.0, self.center.1 - self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity, min_size),
+                    QuadTreeNode::new((self.center.0 - self.size.0 / 2.0, self.center.1 + self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity, min_size),
+                    QuadTreeNode::new((self.center.0 + self.size.0 / 2.0, self.center.1 - self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity, min_size),
+                    QuadTreeNode::new((self.center.0 + self.size.0 / 2.0, self.center.1 + self.size.1 / 2.0), (self.size.0 / 2.0, self.size.1 / 2.0), self.capacity, min_size),
                 ]))
             }
         } else {
             let i = self.get_index(location);
-            self.nodes.as_mut().unwrap()[i].insert(location, data);
+            self.nodes.as_mut().unwrap()[i].insert(location, data, min_size);
         }
     }
 

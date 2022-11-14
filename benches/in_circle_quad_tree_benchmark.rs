@@ -57,7 +57,7 @@ pub fn in_circle_count_benchmark(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("QuadTree10", size), size, |b, size| {
             let size = black_box((*size as f64).sqrt() as i32);
 
-            let mut quad_tree = black_box(QuadTree::new(-size as f64..size as f64, -size as f64..size as f64, 10));
+            let mut quad_tree = black_box(QuadTree::new(-size as f64..size as f64, -size as f64..size as f64,10));
 
             for x in (-size + 1)..size {
                 for y in (-size + 1)..size {
@@ -73,7 +73,7 @@ pub fn in_circle_count_benchmark(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("QuadTree25", size), size, |b, size| {
             let size = black_box((*size as f64).sqrt() as i32);
 
-            let mut quad_tree = black_box(QuadTree::new(-size as f64..size as f64, -size as f64..size as f64, 25));
+            let mut quad_tree = black_box(QuadTree::new(-size as f64..size as f64, -size as f64..size as f64,25));
 
             for x in (-size + 1)..size {
                 for y in (-size + 1)..size {

@@ -10,7 +10,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut quad_tree = QuadTree::new((-size as f64, size as f64), (-size as f64, size as f64), 10);
+                let mut quad_tree = QuadTree::new(-size as f64..size as f64, -size as f64..size as f64, 10);
 
                 for x in -size..size {
                     for y in -size..size {
@@ -24,7 +24,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut quad_tree = QuadTree::new((-size as f64, size as f64), (-size as f64, size as f64), 25);
+                let mut quad_tree = QuadTree::new(-size as f64..size as f64, -size as f64..size as f64, 25);
 
                 for x in -size..size {
                     for y in -size..size {
@@ -38,7 +38,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut quad_tree = QuadTree::new((-size as f64, size as f64), (-size as f64, size as f64), 50);
+                let mut quad_tree = QuadTree::new(-size as f64..size as f64, -size as f64..size as f64, 50);
 
                 for x in -size..size {
                     for y in -size..size {

@@ -1,3 +1,4 @@
+use std::ops::Range;
 use crate::SpatialPartitioner;
 use crate::util::in_range;
 
@@ -5,8 +6,8 @@ pub struct QuadTree<Data: Copy> {
     node: QuadTreeNode<Data>,
     capacity: u16,
 
-    x: (f64, f64),
-    y: (f64, f64),
+    x: Range<f64>,
+    y: Range<f64>,
 
     count: usize,
 }
@@ -15,13 +16,13 @@ impl<Data: Copy> QuadTree<Data> {
     ///
     /// # Arguments
     ///
-    /// * `x`: (min_x, max_x) defines the area in wich points can be inserted
-    /// * `y`: (min_y, max_y) defines the area in wich points can be inserted
+    /// * `x`: min_x..max_x defines the area in wich points can be inserted
+    /// * `y`: min_y..max_y defines the area in wich points can be inserted
     /// * `capacity`: capacity of each TreeNode
     ///
-    pub fn new(x: (f64, f64), y: (f64, f64), capacity: u16) -> QuadTree<Data> {
+    pub fn new(x: Range<f64>, y: Range<f64>, capacity: u16) -> QuadTree<Data> {
         QuadTree {
-            node: QuadTreeNode::new(((x.1 - x.0) / 2.0, (y.1 - y.0) / 2.0), ((x.1 - x.0), (y.1 - y.0)), capacity),
+            node: QuadTreeNode::new(((x.end - x.start) / 2.0, (y.end - y.start) / 2.0), ((x.end - x.start), (y.end - y.start)), capacity),
             x,
             y,
             count: 0,
@@ -32,7 +33,7 @@ impl<Data: Copy> QuadTree<Data> {
 
 impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
-        if position.0 < self.x.0 || position.0 >= self.x.1 || position.1 < self.y.0 || position.1 >= self.y.1 {
+        if position.0 < self.x.start || position.0 >= self.x.end || position.1 < self.y.start || position.1 >= self.y.end {
             panic!("tried to insert position into QuadTree which was out of bounce")
         }
 
@@ -49,7 +50,7 @@ impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
     }
 
     fn clear(&mut self) {
-        self.node = QuadTreeNode::new(((self.x.1 - self.x.0) / 2.0, (self.y.1 - self.y.0) / 2.0), ((self.x.1 - self.x.0), (self.y.1 - self.y.0)), self.capacity);
+        self.node = QuadTreeNode::new(((self.x.start - self.x.end) / 2.0, (self.y.start - self.y.end) / 2.0), ((self.x.start - self.x.end), (self.y.start - self.y.end)), self.capacity);
         self.count = 0;
     }
 

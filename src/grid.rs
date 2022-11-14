@@ -1,3 +1,4 @@
+use std::ops::Range;
 use crate::SpatialPartitioner;
 use crate::util::in_range;
 
@@ -5,8 +6,8 @@ pub struct Grid<Data: Clone> {
     cells: Vec<Vec<((f64, f64), Data)>>,
 
     size: (u32, u32),
-    x: (f64, f64),
-    y: (f64, f64),
+    x: Range<f64>,
+    y: Range<f64>,
 
     count: usize,
 }
@@ -15,11 +16,11 @@ impl<Data: Clone> Grid<Data> {
     ///
     /// # Arguments
     ///
-    /// * `x`: (min_x, max_x) defines the area in wich points can be inserted
-    /// * `y`: (min_y, max_y) defines the area in wich points can be inserted
+    /// * `x`: min_x..max_x defines the area in wich points can be inserted
+    /// * `y`: min_y..max_y defines the area in wich points can be inserted
     /// * `size`: (count_x, count_y) defines how many cell should be present
     ///
-    pub fn new(x: (f64, f64), y: (f64, f64), size: (u32, u32)) -> Grid<Data> {
+    pub fn new(x: Range<f64>, y: Range<f64>, size: (u32, u32)) -> Grid<Data> {
         let mut cells = Vec::new();
 
         for i in 0..(size.0 * size.1) {
@@ -36,8 +37,8 @@ impl<Data: Clone> Grid<Data> {
     }
 
     fn pos_to_index(&self, position: (f64, f64)) -> (u32, u32) {
-        let x = (((position.0 - self.x.0) as f32 / (self.x.1 - self.x.0) as f32) * self.size.0 as f32).floor() as u32;
-        let y = (((position.1 - self.y.0) as f32 / (self.y.1 - self.y.0) as f32) * self.size.1 as f32).floor() as u32;
+        let x = (((position.0 - self.x.start) as f32 / (self.x.end - self.x.start) as f32) * self.size.0 as f32).floor() as u32;
+        let y = (((position.1 - self.y.start) as f32 / (self.y.end - self.y.start) as f32) * self.size.1 as f32).floor() as u32;
 
         (x, y)
     }
@@ -45,7 +46,7 @@ impl<Data: Clone> Grid<Data> {
 
 impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
-        if position.0 < self.x.0 || position.0 >= self.x.1 || position.1 < self.y.0 || position.1 >= self.y.1 {
+        if position.0 < self.x.start || position.0 >= self.x.end || position.1 < self.y.start || position.1 >= self.y.end {
             panic!("tried to insert position into SpatialHash which was out of bounce")
         }
 
@@ -69,8 +70,8 @@ impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
     }
 
     fn in_circle(&self, position: (f64, f64), radius: f64) -> Vec<Data> {
-        let radius_x = (radius / ((self.x.1 - self.x.0) as f64 / self.size.0 as f64)).ceil().min(self.size.0 as f64) as i32;
-        let radius_y = (radius / ((self.y.1 - self.y.0) as f64 / self.size.1 as f64)).ceil().min(self.size.1 as f64) as i32;
+        let radius_x = (radius / ((self.x.end - self.x.start) as f64 / self.size.0 as f64)).ceil().min(self.size.0 as f64) as i32;
+        let radius_y = (radius / ((self.y.end - self.y.start) as f64 / self.size.1 as f64)).ceil().min(self.size.1 as f64) as i32;
 
         let index_position = self.pos_to_index(position);
 

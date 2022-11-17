@@ -75,7 +75,7 @@ impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
     fn in_circle(&self, position: (f64, f64), radius: f64) -> Vec<Data> {
         let mut data = Vec::new();
 
-        self.node.in_circle(position, radius, &mut data);
+        self.node.in_circle(position, radius, &mut data, false);
 
         data
     }
@@ -139,29 +139,56 @@ impl<Data: Copy> QuadTreeNode<Data> {
         }
     }
 
-    fn in_circle(&self, position: (f64, f64), radius: f64, data_vec: &mut Vec<Data>) {
-        for data in &self.data {
-            if in_range(data.0, position, radius) {
-                data_vec.push(data.1)
+    fn in_circle(&self, position: (f64, f64), radius: f64, data_vec: &mut Vec<Data>, in_circle: bool) {
+        if in_circle || self.in_box(position, radius) {
+            data_vec.reserve(self.data.len());
+            for data in &self.data {
+                data_vec.push(data.1);
+            }
+
+            if self.nodes.is_none() {
+                return;
+            }
+
+            self.nodes.as_ref().unwrap()[0].in_circle(position, radius, data_vec, true);
+            self.nodes.as_ref().unwrap()[1].in_circle(position, radius, data_vec, true);
+            self.nodes.as_ref().unwrap()[2].in_circle(position, radius, data_vec, true);
+            self.nodes.as_ref().unwrap()[3].in_circle(position, radius, data_vec, true);
+        } else {
+            for data in &self.data {
+                if in_range(data.0, position, radius) {
+                    data_vec.push(data.1)
+                }
+            }
+
+            if self.nodes.is_none() {
+                return;
+            }
+
+            let mut indexes = [false; 4];
+
+            indexes[self.get_index((position.0 - radius, position.1 - radius))] = true;
+            indexes[self.get_index((position.0 - radius, position.1 + radius))] = true;
+            indexes[self.get_index((position.0 + radius, position.1 - radius))] = true;
+            indexes[self.get_index((position.0 + radius, position.1 + radius))] = true;
+
+            for (i, bool) in indexes.iter().enumerate() {
+                if *bool {
+                    self.nodes.as_ref().unwrap()[i].in_circle(position, radius, data_vec, false);
+                }
             }
         }
+    }
 
-        if self.nodes.is_none() {
-            return;
+    fn in_box(&self, location: (f64, f64), radius: f64) -> bool {
+        if in_range(location, (self.center.0 - self.size.0, self.center.1 + self.size.1), radius)
+            && in_range(location, (self.center.0 + self.size.0, self.center.1 + self.size.1), radius)
+            && in_range(location, (self.center.0 - self.size.0, self.center.1 - self.size.1), radius)
+            && in_range(location, (self.center.0 + self.size.0, self.center.1 - self.size.1), radius) {
+            return true;
         }
 
-        let mut indexes = [false; 4];
-
-        indexes[self.get_index((position.0 - radius, position.1 - radius))] = true;
-        indexes[self.get_index((position.0 - radius, position.1 + radius))] = true;
-        indexes[self.get_index((position.0 + radius, position.1 - radius))] = true;
-        indexes[self.get_index((position.0 + radius, position.1 + radius))] = true;
-
-        for (i, index) in indexes.iter().enumerate() {
-            if *index {
-                self.nodes.as_ref().unwrap()[i].in_circle(position, radius, data_vec);
-            }
-        }
+        false
     }
 
     fn get_index(&self, location: (f64, f64)) -> usize {

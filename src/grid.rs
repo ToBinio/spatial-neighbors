@@ -6,6 +6,7 @@ pub struct Grid<Data: Clone> {
     cells: Vec<Vec<((f64, f64), Data)>>,
 
     size: (u32, u32),
+    cell_size: (f64, f64),
     x: Range<f64>,
     y: Range<f64>,
 
@@ -30,6 +31,7 @@ impl<Data: Clone> Grid<Data> {
         Grid {
             cells,
             size,
+            cell_size: ((x.end - x.start) as f64 / size.0 as f64, (y.end - y.start) as f64 / size.1 as f64),
             x,
             y,
             count: 0,
@@ -37,8 +39,15 @@ impl<Data: Clone> Grid<Data> {
     }
 
     fn pos_to_index(&self, position: (f64, f64)) -> (u32, u32) {
-        let x = (((position.0 - self.x.start) as f32 / (self.x.end - self.x.start) as f32) * self.size.0 as f32).floor() as u32;
-        let y = (((position.1 - self.y.start) as f32 / (self.y.end - self.y.start) as f32) * self.size.1 as f32).floor() as u32;
+        let x = ((position.0 - self.x.start) / self.cell_size.0).floor() as u32;
+        let y = ((position.1 - self.y.start) / self.cell_size.1).floor() as u32;
+
+        (x, y)
+    }
+
+    fn index_to_pos(&self, position: (u32, u32)) -> (f64, f64) {
+        let x = self.cell_size.0 * position.0 as f64 + self.x.start;
+        let y = self.cell_size.1 * position.1 as f64 + self.y.start;
 
         (x, y)
     }
@@ -91,6 +100,21 @@ impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
                 match self.cells.get(index as usize) {
                     None => {}
                     Some(elements) => {
+                        if elements.len() > 4 {
+                            let pos = self.index_to_pos((x as u32, y as u32));
+
+                            if in_range(position, (pos.0 + self.cell_size.0, pos.1), radius)
+                                && in_range(position, (pos.0 + self.cell_size.0, pos.1 + self.cell_size.1), radius)
+                                && in_range(position, (pos.0, pos.1), radius)
+                                && in_range(position, (pos.0, pos.1 + self.cell_size.1), radius) {
+                                for element in elements {
+                                    data.push(element.1.clone());
+                                }
+
+                                continue;
+                            }
+                        }
+
                         for element in elements {
                             if in_range(element.0, position, radius) {
                                 data.push(element.1.clone());

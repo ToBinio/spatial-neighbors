@@ -140,7 +140,7 @@ impl<Data: Copy> QuadTreeNode<Data> {
     }
 
     fn in_circle(&self, position: (f64, f64), radius: f64, data_vec: &mut Vec<Data>, in_circle: bool) {
-        if in_circle || self.in_box(position, radius) {
+        if in_circle || (self.data.len() > 4 && self.in_box(position, radius)) {
             data_vec.reserve(self.data.len());
             for data in &self.data {
                 data_vec.push(data.1);

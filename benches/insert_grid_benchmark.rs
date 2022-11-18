@@ -3,10 +3,10 @@ use spatial_neighbors::{SpatialPartitioner};
 use spatial_neighbors::grid::Grid;
 
 pub fn insert_benchmark(c: &mut Criterion) {
-    let mut group = c.benchmark_group("Insert");
+    let mut group = c.benchmark_group("InsertGrid");
 
     for size in [1_000, 10_000, 20_000].iter() {
-        group.bench_with_input(BenchmarkId::new("HashSet10", size), size, |b, size| {
+        group.bench_with_input(BenchmarkId::new("Grid10", size), size, |b, size| {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
@@ -20,7 +20,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             })
         });
 
-        group.bench_with_input(BenchmarkId::new("HashSet100", size), size, |b, size| {
+        group.bench_with_input(BenchmarkId::new("Grid100", size), size, |b, size| {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
@@ -34,7 +34,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             })
         });
 
-        group.bench_with_input(BenchmarkId::new("HashSet1000", size), size, |b, size| {
+        group.bench_with_input(BenchmarkId::new("Grid1000", size), size, |b, size| {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {

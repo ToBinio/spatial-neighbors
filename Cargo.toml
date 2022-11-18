@@ -17,7 +17,7 @@ exclude = [
 criterion = { version = "0.4.0", features = ["html_reports"] }
 
 [[bench]]
-name = "insert_spatial_hash_benchmark"
+name = "insert_grid_benchmark"
 harness = false
 
 [[bench]]
@@ -25,7 +25,7 @@ name = "insert_quad_tree_benchmark"
 harness = false
 
 [[bench]]
-name = "in_circle_spatial_hash_benchmark"
+name = "in_circle_grid_benchmark"
 harness = false
 
 [[bench]]

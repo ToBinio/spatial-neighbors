@@ -1,6 +1,6 @@
 [package]
 name = "spatial-neighbors"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["ToBinio"]
 edition = "2021"
 description = "Simple to use implementation of certain Spatial-Partitioning Algorithms | DataStructures"

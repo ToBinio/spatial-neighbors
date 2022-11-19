@@ -18,8 +18,8 @@ impl<Data: Copy> Grid<Data> {
     ///
     /// # Arguments
     ///
-    /// * `x`: min_x..max_x defines the area in wich points can be inserted
-    /// * `y`: min_y..max_y defines the area in wich points can be inserted
+    /// * `x`: min_x..max_x defines the area in wich data can be inserted
+    /// * `y`: min_y..max_y defines the area in wich data can be inserted
     /// * `size`: (count_x, count_y) defines how many cell should be present
     ///
     pub fn new(x: Range<f64>, y: Range<f64>, size: (u32, u32)) -> Grid<Data> {
@@ -55,6 +55,13 @@ impl<Data: Copy> Grid<Data> {
 }
 
 impl<Data: Copy> SpatialPartitioner<Data> for Grid<Data> {
+    ///
+    /// create a Grid with a default size of (100,100). More info here [`Grid::new()`]
+    ///
+    fn new(x: Range<f64>, y: Range<f64>) -> Self {
+        Grid::new(x, y, (100, 100))
+    }
+
     fn insert(&mut self, position: (f64, f64), data: Data) {
         if position.0 < self.x.start || position.0 >= self.x.end || position.1 < self.y.start || position.1 >= self.y.end {
             panic!("tried to insert position into SpatialHash which was out of bounce")

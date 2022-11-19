@@ -17,8 +17,8 @@ impl<Data: Copy> QuadTree<Data> {
     ///
     /// # Arguments
     ///
-    /// * `x`: min_x..max_x defines the area in wich points can be inserted
-    /// * `y`: min_y..max_y defines the area in wich points can be inserted
+    /// * `x`: min_x..max_x defines the area in wich data can be inserted
+    /// * `y`: min_y..max_y defines the area in wich data can be inserted
     /// * `capacity`: capacity of each TreeNode
     ///
     pub fn new(x: Range<f64>, y: Range<f64>, capacity: u16) -> QuadTree<Data> {
@@ -33,6 +33,13 @@ impl<Data: Copy> QuadTree<Data> {
 }
 
 impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
+    ///
+    /// create a QuadTree with a default capacity of 50. More info here [`QuadTree::new()`]
+    ///
+    fn new(x: Range<f64>, y: Range<f64>) -> Self {
+        Self::new(x, y, 50)
+    }
+
     fn insert(&mut self, position: (f64, f64), data: Data) {
         if position.0 < self.x.start || position.0 >= self.x.end || position.1 < self.y.start || position.1 >= self.y.end {
             panic!("tried to insert position into QuadTree which was out of bounce")

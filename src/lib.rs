@@ -16,12 +16,23 @@ pub mod quad_tree;
 
 extern crate core;
 
+use std::ops::Range;
+
 pub trait SpatialPartitioner<Data: Copy> {
+    /// create a new SpatialPartitioner which can handle positions in the given ranges
+    ///
+    /// # Arguments
+    ///
+    /// * `x`: min_x..max_x defines the area in wich data can be inserted
+    /// * `y`: min_y..max_y defines the area in wich data can be inserted
+    ///
+
+    fn new(x: Range<f64>, y: Range<f64>) -> Self;
     /// inserts an obj and checks if position is out of bounce
     ///
     /// # Arguments
     ///
-    /// * `position`: position of the obj (x,y)
+    /// * `position`: position of the data (x,y)
     /// * `data`: the DataValue which will be return when queued
     /// e.g index of an other list which stores the "real" data
     ///
@@ -30,13 +41,13 @@ pub trait SpatialPartitioner<Data: Copy> {
     ///
     /// # Arguments
     ///
-    /// * `position`: position of the obj (x,y)
+    /// * `position`: position of the data (x,y)
     /// * `data`: the DataValue which will be return when queued.
     /// e.g index of an other list which stores the "real" data
     ///
     fn insert_unchecked(&mut self, position: (f64, f64), data: Data);
 
-    /// returns the count of points which are currently stored
+    /// returns the count of DataValues which are currently stored
     fn count(&self) -> usize;
 
     fn clear(&mut self);

@@ -30,6 +30,15 @@ impl<Data: Copy> QuadTree<Data> {
             count: 0,
         }
     }
+
+    ///
+    /// # Arguments
+    ///
+    /// returns : &QuadTreeNode<Data> the root node of the QuadTree
+    ///
+    pub fn node(&self) -> &QuadTreeNode<Data> {
+        &self.node
+    }
 }
 
 impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
@@ -71,7 +80,7 @@ impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
     }
 }
 
-struct QuadTreeNode<Data: Copy> {
+pub struct QuadTreeNode<Data: Copy> {
     data: Vec<((f64, f64), Data)>,
     capacity: u16,
 
@@ -84,6 +93,42 @@ struct QuadTreeNode<Data: Copy> {
 }
 
 impl<Data: Copy> QuadTreeNode<Data> {
+    ///
+    /// # Arguments
+    ///
+    /// returns : &Option<Box<[QuadTreeNode<Data>; 4]>> the nodes of the current node
+    ///
+    pub fn nodes(&self) -> &Option<Box<[QuadTreeNode<Data>; 4]>> {
+        &self.nodes
+    }
+
+    ///
+    /// # Arguments
+    ///
+    /// returns : &Vec<((f64, f64), Data)> the Elements stored in the current node
+    ///
+    pub fn data(&self) -> &Vec<((f64, f64), Data)> {
+        &self.data
+    }
+
+    ///
+    /// # Arguments
+    ///
+    /// returns : &(f64, f64) the center of the current node
+    ///
+    pub fn center(&self) -> (f64, f64) {
+        self.center
+    }
+
+    ///
+    /// # Arguments
+    ///
+    /// returns : &(f64, f64) the size of the current node
+    ///
+    pub fn size(&self) -> (f64, f64) {
+        self.size
+    }
+
     fn new(center: (f64, f64), size: (f64, f64), capacity: u16) -> QuadTreeNode<Data> {
         QuadTreeNode {
             data: Vec::new(),

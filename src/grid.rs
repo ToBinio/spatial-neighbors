@@ -7,6 +7,7 @@ pub struct Grid<Data: Copy> {
 
     size: (u32, u32),
     cell_size: (f64, f64),
+
     x: Range<f64>,
     y: Range<f64>,
 

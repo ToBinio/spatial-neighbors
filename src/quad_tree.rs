@@ -4,6 +4,7 @@ use crate::util::in_range;
 
 pub struct QuadTree<Data: Copy> {
     node: QuadTreeNode<Data>,
+
     min_size: Option<f64>,
     capacity: u16,
 
@@ -11,7 +12,6 @@ pub struct QuadTree<Data: Copy> {
     y: Range<f64>,
 
     count: usize,
-
 }
 
 impl<Data: Copy> QuadTree<Data> {
@@ -119,9 +119,9 @@ impl<Data: Copy> QuadTreeNode<Data> {
         }
     }
 
-    fn insert(&mut self, location: (f64, f64), data: Data, min_size: Option<f64>) {
+    fn insert(&mut self, position: (f64, f64), data: Data, min_size: Option<f64>) {
         if !self.is_full {
-            self.data.push((location, data));
+            self.data.push((position, data));
 
             if !self.is_min_size && self.data.len() >= self.capacity as usize {
                 self.is_full = true;
@@ -134,29 +134,29 @@ impl<Data: Copy> QuadTreeNode<Data> {
                 ]))
             }
         } else {
-            let i = self.get_index(location);
-            self.nodes.as_mut().unwrap()[i].insert(location, data, min_size);
+            let i = self.get_index(position);
+            self.nodes.as_mut().unwrap()[i].insert(position, data, min_size);
         }
     }
 
-    fn in_circle(&self, position: (f64, f64), radius: f64, data_vec: &mut Vec<Data>, in_circle: bool) {
+    fn in_circle(&self, position: (f64, f64), radius: f64, data: &mut Vec<Data>, in_circle: bool) {
         if in_circle || (self.data.len() > 4 && self.in_box(position, radius)) {
-            data_vec.reserve(self.data.len());
+            data.reserve(self.data.len());
 
-            data_vec.extend(self.data.iter().map(|x| x.1));
+            data.extend(self.data.iter().map(|x| x.1));
 
             if self.nodes.is_none() {
                 return;
             }
 
-            self.nodes.as_ref().unwrap()[0].in_circle(position, radius, data_vec, true);
-            self.nodes.as_ref().unwrap()[1].in_circle(position, radius, data_vec, true);
-            self.nodes.as_ref().unwrap()[2].in_circle(position, radius, data_vec, true);
-            self.nodes.as_ref().unwrap()[3].in_circle(position, radius, data_vec, true);
+            self.nodes.as_ref().unwrap()[0].in_circle(position, radius, data, true);
+            self.nodes.as_ref().unwrap()[1].in_circle(position, radius, data, true);
+            self.nodes.as_ref().unwrap()[2].in_circle(position, radius, data, true);
+            self.nodes.as_ref().unwrap()[3].in_circle(position, radius, data, true);
         } else {
-            for data in &self.data {
-                if in_range(data.0, position, radius) {
-                    data_vec.push(data.1)
+            for elements in &self.data {
+                if in_range(elements.0, position, radius) {
+                    data.push(elements.1)
                 }
             }
 
@@ -173,7 +173,7 @@ impl<Data: Copy> QuadTreeNode<Data> {
 
             for (i, bool) in indexes.iter().enumerate() {
                 if *bool {
-                    self.nodes.as_ref().unwrap()[i].in_circle(position, radius, data_vec, false);
+                    self.nodes.as_ref().unwrap()[i].in_circle(position, radius, data, false);
                 }
             }
         }

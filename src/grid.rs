@@ -22,7 +22,7 @@ impl<Data: Copy> Grid<Data> {
     /// * `y`: min_y..max_y defines the area in wich data can be inserted
     /// * `cell_count`: (count_x, count_y) defines how many cell should be present
     ///
-    pub fn new(x: Range<f64>, y: Range<f64>, cell_count: (usize, usize)) -> Grid<Data> {
+    pub fn with_cell_count(x: Range<f64>, y: Range<f64>, cell_count: (usize, usize)) -> Grid<Data> {
         let mut cells = Vec::new();
 
         for i in 0..(cell_count.0 * cell_count.1) {
@@ -90,7 +90,7 @@ impl<Data: Copy> SpatialPartitioner<Data> for Grid<Data> {
     /// create a Grid with a default size of (100,100). More info here [`Grid::new()`]
     ///
     fn new(x: Range<f64>, y: Range<f64>) -> Self {
-        Grid::new(x, y, (100, 100))
+        Grid::with_cell_count(x, y, (100, 100))
     }
 
     fn insert(&mut self, position: (f64, f64), data: Data) {

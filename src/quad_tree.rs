@@ -21,7 +21,7 @@ impl<Data: Copy> QuadTree<Data> {
     /// * `y`: min_y..max_y defines the area in wich data can be inserted
     /// * `capacity`: capacity of each TreeNode
     ///
-    pub fn new(x: Range<f64>, y: Range<f64>, capacity: u16) -> QuadTree<Data> {
+    pub fn with_capacity(x: Range<f64>, y: Range<f64>, capacity: u16) -> QuadTree<Data> {
         QuadTree {
             node: QuadTreeNode::new(((x.end - x.start) / 2.0, (y.end - y.start) / 2.0), ((x.end - x.start), (y.end - y.start)), capacity),
             capacity,
@@ -46,7 +46,7 @@ impl<Data: Copy> SpatialPartitioner<Data> for QuadTree<Data> {
     /// create a QuadTree with a default capacity of 50. More info here [`QuadTree::new()`]
     ///
     fn new(x: Range<f64>, y: Range<f64>) -> Self {
-        Self::new(x, y, 50)
+        QuadTree::with_capacity(x, y, 50)
     }
 
     fn insert(&mut self, position: (f64, f64), data: Data) {

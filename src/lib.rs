@@ -16,7 +16,7 @@ pub mod quad_tree;
 
 extern crate core;
 
-pub trait SpatialPartitioner<Data: Clone> {
+pub trait SpatialPartitioner<Data: Copy> {
     /// inserts an obj and checks if position is out of bounce
     ///
     /// # Arguments

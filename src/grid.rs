@@ -2,7 +2,7 @@ use std::ops::Range;
 use crate::SpatialPartitioner;
 use crate::util::in_range;
 
-pub struct Grid<Data: Clone> {
+pub struct Grid<Data: Copy> {
     cells: Vec<Vec<((f64, f64), Data)>>,
 
     size: (u32, u32),
@@ -13,7 +13,7 @@ pub struct Grid<Data: Clone> {
     count: usize,
 }
 
-impl<Data: Clone> Grid<Data> {
+impl<Data: Copy> Grid<Data> {
     ///
     /// # Arguments
     ///
@@ -53,7 +53,7 @@ impl<Data: Clone> Grid<Data> {
     }
 }
 
-impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
+impl<Data: Copy> SpatialPartitioner<Data> for Grid<Data> {
     fn insert(&mut self, position: (f64, f64), data: Data) {
         if position.0 < self.x.start || position.0 >= self.x.end || position.1 < self.y.start || position.1 >= self.y.end {
             panic!("tried to insert position into SpatialHash which was out of bounce")
@@ -107,9 +107,7 @@ impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
                                 && in_range(position, (pos.0 + self.cell_size.0, pos.1 + self.cell_size.1), radius)
                                 && in_range(position, (pos.0, pos.1), radius)
                                 && in_range(position, (pos.0, pos.1 + self.cell_size.1), radius) {
-                                for element in elements {
-                                    data.push(element.1.clone());
-                                }
+                                data.extend(elements.iter().map(|x| x.1));
 
                                 continue;
                             }
@@ -117,7 +115,7 @@ impl<Data: Clone> SpatialPartitioner<Data> for Grid<Data> {
 
                         for element in elements {
                             if in_range(element.0, position, radius) {
-                                data.push(element.1.clone());
+                                data.push(element.1);
                             }
                         }
                     }

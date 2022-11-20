@@ -10,7 +10,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut spatial_hash = Grid::new(-size as f64..size as f64, -size as f64..size as f64, (10, 10));
+                let mut spatial_hash = Grid::with_cell_count(-size as f64..size as f64, -size as f64..size as f64, (10, 10));
 
                 for x in -size..size {
                     for y in -size..size {
@@ -24,7 +24,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut spatial_hash = Grid::new(-size as f64..size as f64, -size as f64..size as f64,(100, 100));
+                let mut spatial_hash = Grid::with_cell_count(-size as f64..size as f64, -size as f64..size as f64,(100, 100));
 
                 for x in -size..size {
                     for y in -size..size {
@@ -38,7 +38,7 @@ pub fn insert_benchmark(c: &mut Criterion) {
             let size = black_box((*size as f64).sqrt() as i32);
 
             b.iter(|| {
-                let mut spatial_hash = Grid::new(-size as f64..size as f64, -size as f64..size as f64, (1000, 1000));
+                let mut spatial_hash = Grid::with_cell_count(-size as f64..size as f64, -size as f64..size as f64, (1000, 1000));
 
                 for x in -size..size {
                     for y in -size..size {
